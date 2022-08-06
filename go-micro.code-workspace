@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "images"
+		},
+		{
+			"path": "auth-service"
 		}
 	]
 }
