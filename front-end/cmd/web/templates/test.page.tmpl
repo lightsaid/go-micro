@@ -7,6 +7,8 @@
       <h1 class="mt-5">Test microservices</h1>
       <hr>
 
+      <button id="broker-service" class="btn btn-outline-secondary btn-service">Test Broker</button>
+
       <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
         <span class="text-muted">Output shows here...</span>
       </div>
@@ -31,6 +33,45 @@
 
 {{define "js"}}
 <script>
+  let btnServices = document.querySelectorAll(".btn-service")
+  let output = document.getElementById("output")
+  let sent = document.getElementById("payload")
+  let received = document.getElementById("received")
+
+  let services = {
+    "broker-service": function (event) {
+      const body = {
+        method: "POST",
+      }
+      fetch("http://localhost:8080", body)
+        .then(response => response.json())
+        .then(data => {
+          sent.innerHTML = "Empty post request"
+          // 格式化输出
+          received.innerHTML = JSON.stringify(data, undefined, 4)
+          if (data.error) {
+            console.log(data.message);
+          } else {
+            output.innerHTML += `<br><strong> Response from broker service</strong>:${data.message}`
+          }
+        }).catch(err => {
+          output.innerHTML += "<br><br>Error:" + err
+        })
+    }
+  }
+
+  btnServices.forEach(function (btn) {
+    try {
+      btn.addEventListener("click", services[btn.id], false)
+    } catch (err) {
+      console.error(err)
+    }
+  })
+
+
+
+
+
 
 </script>
 {{end}}
