@@ -1,0 +1,29 @@
+version: "3.8"
+
+# 服务
+services:
+
+  # 定义 broker-service 服务
+  broker-service:
+    # 构建
+    build: 
+      # 指定上下文(目录)
+      context: ./../broker-service
+      # 指定dockerfile
+      dockerfile: ./../broker-service/broker-service.dockerfile
+
+    # 设置开机启动
+    restart: always
+
+    # 端口映射
+    ports:
+      - "8080:8080"
+
+    # 部署
+    deploy:
+      # 复制模式
+      mode: replicated
+      replicas: 1
+
+    
+
