@@ -1,6 +1,7 @@
 ## 定义基础变量
 FRONT_END_BINARY=frontApp
 BROKER_BINARY=brokerApp
+AUTH_BINARY=authApp
 
 ## up: 在后台启动所有容器
 up:
@@ -9,7 +10,7 @@ up:
 	@echo "Docker containers SUCCESS"
 
 ## up_build: 停止 docker-compose, 重新构建
-up_build: build_broker
+up_build: build_broker build_auth
 	@echo "Stopping docker containers"
 	docker-compose down
 	@echo "Building images..."
@@ -27,6 +28,13 @@ build_broker:
 	@echo "Building broker ..."
 	cd ../broker-service && env GOOS=linux CGO_ENABLED=0 go build -o ${BROKER_BINARY} ./cmd/api
 	@echo "SUCCESS"
+
+## build_auth: 构建 Go 可执行文件
+build_auth:
+	@echo "Building auth ..."
+	cd ../auth-service && env GOOS=linux CGO_ENABLED=0 go build -o ${AUTH_BINARY} ./cmd/api
+	@echo "SUCCESS"
+
 
 ## build_front: 构建前端可执行文件
 build_front:

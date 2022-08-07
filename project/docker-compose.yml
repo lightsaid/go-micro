@@ -22,8 +22,36 @@ services:
     # 部署
     deploy:
       # 复制模式
+      mode: replicated 
+      replicas: 1
+  
+  ## 认证服务
+  auth-service:
+    build:
+      context: ./../auth-service
+      dockerfile: ./../auth-service/auth-service.dockerfile
+    restart: always
+    ports:
+      - "8081:8080"
+    deploy:
       mode: replicated
       replicas: 1
+    environment:
+      DSN: "host=postgres port=5432 user=postgres password=abc123 dbname=go_micro sslmode=disable connect_timeout=10"
+      
 
-    
-
+  # 数据库服务（postgresql）
+  postgres:
+    image: "postgres:14.0"
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: abc123
+      POSTGRES_DB: go_micro
+    volumes:
+      - ./db-data/postgres:/var/lib/postgresql/data

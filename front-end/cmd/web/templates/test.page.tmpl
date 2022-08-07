@@ -2,73 +2,124 @@
 
 {{define "content" }}
 <div class="container">
-  <div class="row">
-    <div class="col">
-      <h1 class="mt-5">Test microservices</h1>
-      <hr>
+	<div class="row">
+		<div class="col">
+			<h1 class="mt-5">Test microservices</h1>
+			<hr>
 
-      <button id="broker-service" class="btn btn-outline-secondary btn-service">Test Broker</button>
+			<button id="broker-service" class="btn btn-outline-secondary btn-service">Test Broker</button>
+			<button id="add-user-service" class="btn btn-outline-secondary btn-service">Test Add User</button>
+			<button id="auth-service" class="btn btn-outline-secondary btn-service">Test Auth</button>
 
-      <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
-        <span class="text-muted">Output shows here...</span>
-      </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col">
-      <h4 class="mt-5">Sent</h4>
-      <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-        <pre id="payload"><span class="text-muted">Nothing sent yet...</span></pre>
-      </div>
-    </div>
-    <div class="col">
-      <h4 class="mt-5">Received</h4>
-      <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-        <pre id="received"><span class="text-muted">Nothing received yet...</span></pre>
-      </div>
-    </div>
-  </div>
+			<div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
+				<span class="text-muted">Output shows here...</span>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col">
+			<h4 class="mt-5">Sent</h4>
+			<div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
+				<pre id="payload"><span class="text-muted">Nothing sent yet...</span></pre>
+			</div>
+		</div>
+		<div class="col">
+			<h4 class="mt-5">Received</h4>
+			<div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
+				<pre id="received"><span class="text-muted">Nothing received yet...</span></pre>
+			</div>
+		</div>
+	</div>
 </div>
 {{end}}
 
 {{define "js"}}
 <script>
-  let btnServices = document.querySelectorAll(".btn-service")
-  let output = document.getElementById("output")
-  let sent = document.getElementById("payload")
-  let received = document.getElementById("received")
+	let btnServices = document.querySelectorAll(".btn-service")
+	let output = document.getElementById("output")
+	let sent = document.getElementById("payload")
+	let received = document.getElementById("received")
 
-  let services = {
-    "broker-service": function (event) {
-      const body = {
-        method: "POST",
-      }
-      fetch("http://localhost:8080", body)
-        .then(response => response.json())
-        .then(data => {
-          sent.innerHTML = "Empty post request"
-          // 格式化输出
-          received.innerHTML = JSON.stringify(data, undefined, 4)
-          if (data.error) {
-            console.log(data.message);
-          } else {
-            output.innerHTML += `<br><strong> Response from broker service</strong>:${data.message}`
-          }
-        }).catch(err => {
-          output.innerHTML += "<br><br>Error:" + err
-        })
-    }
-  }
+	let services = {
+		"broker-service": function (event) {
+			const body = {
+				method: "POST",
+			}
+			fetch("http:\/\/localhost:8080", body)
+				.then(response => response.json())
+				.then(data => {
+					sent.innerHTML = "Empty post request"
+					// 格式化输出
+					received.innerHTML = JSON.stringify(data, undefined, 4)
+					if (data.error) {
+						console.log(data.message);
+					} else {
+						output.innerHTML += `<br><strong> Response from broker service</strong>:${data.message}`
+					}
+				}).catch(err => {
+					output.innerHTML += "<br><br>Error:" + err
+				})
+		},
+		"add-user-service": function (event) {
+			const options = {
+				body: {
+					action: "add_user",
+					user: {
+						email: "lightsaid@163.com",
+						username: "lightsaid",
+						password: "abc123"
+					}
+				}
+			}
+			request("http:\/\/localhost:8080/handle", options)
+		},
+		"auth-service": function (event) {
+			const options = {
+				body: {
+					action: "auth",
+					auth: {
+						email: "lightsaid@163.com",
+						password: "abc123"
+					}
+				}
+			}
+			request("http:\/\/localhost:8080/handle", options)
+		}
+	}
 
-  btnServices.forEach(function (btn) {
-    try {
-      btn.addEventListener("click", services[btn.id], false)
-    } catch (err) {
-      console.error(err)
-    }
-  })
+	btnServices.forEach(function (btn) {
+		try {
+			btn.addEventListener("click", services[btn.id], false)
+		} catch (err) {
+			console.error(err)
+		}
+	})
 
 
+	var request = (url, options) => {
+		let headers = new Headers()
+		headers.append('Content-Type', 'application/json')
+		const param = {
+			method: options.method ? options.method : "POST",
+			headers: Object.assign(headers, options.headers),
+			body: JSON.stringify(options.body)
+		}
+
+		return fetch(url, param)
+			.then(response => response.json())
+			.then((data) => {
+				sent.innerHTML = JSON.stringify(options.body, undefined, 4);
+				received.innerHTML = JSON.stringify(data, undefined, 4);
+				if (data.error) {
+					output.innerHTML += `<br><strong>Error:</strong> ${data.message}`;
+				} else {
+					output.innerHTML += `<br><strong>Response from broker service</strong>: ${data.message}`;
+				}
+			})
+			.catch((error) => {
+				output.innerHTML += "<br><br>Eror: " + error;
+			})
+	}
 
 
 
