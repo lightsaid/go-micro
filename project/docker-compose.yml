@@ -38,6 +38,18 @@ services:
       replicas: 1
     environment:
       DSN: "host=postgres port=5432 user=postgres password=abc123 dbname=go_micro sslmode=disable connect_timeout=10"
+
+  ## logger 服务
+  logger-service:
+    build:
+      context: ./../logger-service
+      dockerfile: ./../logger-service/logger-service.dockerfile
+    restart: always
+    # ports:
+    #   - "8082:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
       
 
   # 数据库服务（postgresql）
@@ -55,3 +67,23 @@ services:
       POSTGRES_DB: go_micro
     volumes:
       - ./db-data/postgres:/var/lib/postgresql/data
+  
+  ## mongodb 服务
+  mongo:
+    image: "mongo:4.2.16-bionic"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: abc123
+    volumes:
+      - ./db-data/mongo:/data/db
+
+  # 邮件服务 (localhost:8025)
+  mailhog:
+    image: "mailhog/mailhog:latest"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    

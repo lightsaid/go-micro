@@ -10,6 +10,8 @@
 			<button id="broker-service" class="btn btn-outline-secondary btn-service">Test Broker</button>
 			<button id="add-user-service" class="btn btn-outline-secondary btn-service">Test Add User</button>
 			<button id="auth-service" class="btn btn-outline-secondary btn-service">Test Auth</button>
+			<button id="log-service" class="btn btn-outline-secondary btn-service">Test Log</button>
+
 
 			<div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
 				<span class="text-muted">Output shows here...</span>
@@ -84,6 +86,18 @@
 				}
 			}
 			request("http:\/\/localhost:8080/handle", options)
+		},
+		"log-service": function (event) {
+			const options = {
+				body: {
+					action: "log",
+					log: {
+						name: "log info",
+						data: "logger service testing"
+					}
+				}
+			}
+			request("http:\/\/localhost:8080/handle", options)
 		}
 	}
 
@@ -120,8 +134,6 @@
 				output.innerHTML += "<br><br>Eror: " + error;
 			})
 	}
-
-
 
 
 </script>

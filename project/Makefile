@@ -2,6 +2,7 @@
 FRONT_END_BINARY=frontApp
 BROKER_BINARY=brokerApp
 AUTH_BINARY=authApp
+LOGGER_BINARY=logApp
 
 ## up: 在后台启动所有容器
 up:
@@ -10,7 +11,7 @@ up:
 	@echo "Docker containers SUCCESS"
 
 ## up_build: 停止 docker-compose, 重新构建
-up_build: build_broker build_auth
+up_build: build_broker build_auth build_looger
 	@echo "Stopping docker containers"
 	docker-compose down
 	@echo "Building images..."
@@ -33,6 +34,12 @@ build_broker:
 build_auth:
 	@echo "Building auth ..."
 	cd ../auth-service && env GOOS=linux CGO_ENABLED=0 go build -o ${AUTH_BINARY} ./cmd/api
+	@echo "SUCCESS"
+
+## build_looger: 构建 Go 可执行文件
+build_looger:
+	@echo "Building logger ..."
+	cd ../logger-service && env GOOS=linux CGO_ENABLED=0 go build -o ${LOGGER_BINARY} ./cmd/api
 	@echo "SUCCESS"
 
 
